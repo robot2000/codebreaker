@@ -5,7 +5,7 @@ module Codebreaker
   describe Guess do
     
     context "#valid?" do
-      let(:valid) do Guess.new("1256") end
+      let(:valid) { Guess.new("1256") }
       let(:not_valid) { Guess.new("125634") }
       let(:not_valid_figures) { Guess.new("9173") }
 

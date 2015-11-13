@@ -1,15 +1,15 @@
 module Codebreaker
-  
+
   class Guess
+
+    attr_accessor :value
     
-    attr_accessor :code
-    
-    def initialize(code = nil)
-      @code = code
+    def initialize value
+      @value = value
     end
 
     def valid?
-      @code =~ /^[1-6]{4}$/
+      @value =~ /^[1-6]{4}$/
     end
   end
 end
