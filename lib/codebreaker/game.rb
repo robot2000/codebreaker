@@ -70,11 +70,12 @@ module Codebreaker
       string = guess(suspect)
       if string == "++++"
         save_game("../../results.txt")
-        p "#{@player} you win !!!"
+        return :win
       elsif @attempts < MAX_ATTEMPTS
+        string
         p "you have used #{@attempts} from #{MAX_ATTEMPTS} attempts"
       elsif @attempts == MAX_ATTEMPTS
-        return "Game over"
+        return :game_over
       end
     end
 
