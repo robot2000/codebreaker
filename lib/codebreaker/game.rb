@@ -1,92 +1,79 @@
-require 'codebreaker/guess.rb'
-require 'codebreaker/player.rb'
-
 module Codebreaker
   class Game
-
-    SECRET_CODE_SIZE = 4
-    MAX_ATTEMPTS = 4
-
-    attr_reader :secret, :attempts, :hints, :player
-    attr_accessor :user_code
-
-    def initialize(player)
-      @player = player
-      @secret = ""
-      @player_code = ""
-      @hints = 0
-      @attempts = 0
-      generate_secret
-      # @secret_code = secret_code
-      # @result = []
-    end
     
+    SECRET_CODE_SIZE = 4
+    MAX_SCORE = 10
+    MAX_ROUNDS = 10
+    ROUND_PENALTY = 10
+    HINT = 5
+
+    attr_reader :round_number, :guess, :game_status, :hint
+
+    def initialize
+      @secret = ''
+      @round_number = 0
+      @guess = {}
+      @game_status = 'play'
+      @hint = ''
+    end
+ 
     def start
-      generate_secret
-    end
-
-    def user_code(player_code)
-      guess = Codebreaker::Guess.new(player_code)
-      @player_code = player_code if guess.valid?
-    end
-
-    def guess(suspect)
-      result = ""
-      SECRET_CODE_SIZE.times do |el|
-        if @secret[el] == suspect.value[el]
-          result << "+"
-        elsif @secret.include? suspect.value[el]
-          result << "-"
-        else
-          result << ""
-        end
-      end
-      result
-    end
-
-    def generate_secret
       SECRET_CODE_SIZE.times do
         @secret << (Random.rand(1..6)).to_s
       end
     end
 
-    def use_hint?
-      @hints < 1 ? true : false
+    def check (suspect)
+      
+      raise ArgumentError, 'length must be equal 4' unless suspect.to_s.size == SECRET_CODE_SIZE
+      raise ArgumentError, 'must contain only numbers from 1 to 6' unless suspect.to_s[/[1-6]+/].size == SECRET_CODE_SIZE
+      
+      plus  = ''
+      minus = '' 
+      secret_array = @secret.split('')
+      suspect_array = suspect.to_s.split('')
+
+      suspect_array.each_with_index do |value, index|
+        if (value == secret_array[index])
+          secret_array[index] = '0'
+          suspect_array[index] = '+'
+          plus += '+'
+        end
+      end
+
+      suspect_array.each do |value|
+        if (secret_array.include?(value))
+          secret_array[secret_array.find_index(value)] = '-'
+          minus += '-'
+        end
+      end
+      result = plus + minus
+      @guess[suspect.to_s] = result
+      @round_number += 1
+      @game_status = 'win' if result == '++++'
+      @game_status = 'loose' if @round_number >= MAX_ROUNDS
+      result
     end
 
-    def take_hint
-      if use_hint?
-        @hints += 1
-        @secret_code.split('')[rand(0..3)]
+    def hint
+      if @hint.to_s.empty?
+        @hint = ''
+        hint_pos = Random.rand(SECRET_CODE_SIZE);
+        hint_pos.times {@hint += '*'}
+        @hint += @secret[hint_pos].to_s
+        (SECRET_CODE_SIZE - hint_pos - 1).times {@hint += '*'}
       end
-    end
-    
-    def answer
-      @secret
+      @hint
     end
 
-    def result(suspect)
-      @attempts += 1
-      string = guess(suspect)
-      if string == "++++"
-        save_game("../../results.txt")
-        return :win
-      elsif @attempts < MAX_ATTEMPTS
-        string
-        p "you have used #{@attempts} from #{MAX_ATTEMPTS} attempts"
-      elsif @attempts == MAX_ATTEMPTS
-        return :game_over
-      end
+    def score
+      hints_used = 0
+      hints_used = 1 unless @hint.empty?
+      MAX_SCORE - hints_used*HINT - @round_number*ROUND_PENALTY
     end
 
     def save_game(file)
-      File.open(file, 'w') { |f| f.puts("#{@player} guessed code.\n with #{@attempts} attempts\n and use #{@hints} hints") }
-    end
-
-    def answer
-      @secret
+      # File.open(file, 'w') { |f| f. }
     end
   end
 end
-
-  

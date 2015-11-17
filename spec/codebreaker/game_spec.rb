@@ -1,16 +1,15 @@
 require 'spec_helper'
 require 'codebreaker/guess.rb'
-require 'codebreaker/player.rb'
 require 'codebreaker/game.rb'
 
 
 module Codebreaker
   describe Game do
     
-    let(:player) {Player.new("test")}
+    # let(:player) {Player.new("test")}
     let(:game) {Game.new(player)}
     
-    context "#generate_secret" do
+    context "#start" do
 
       it "save the secret code" do
         expect(game.secret).not_to be_empty
