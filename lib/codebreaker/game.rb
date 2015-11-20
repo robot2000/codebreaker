@@ -7,14 +7,14 @@ module Codebreaker
     ROUND_PENALTY = 10
     HINT = 5
 
-    attr_reader :round_number, :guess, :game_status, :hint
+    attr_reader :round_number, :guess, :game_status, :hint_value
 
     def initialize
       @secret = ''
       @round_number = 0
       @guess = {}
       @game_status = 'play'
-      @hint = ''
+      @hint_value = ''
     end
  
     def start
@@ -56,19 +56,19 @@ module Codebreaker
     end
 
     def hint
-      if @hint.to_s.empty?
-        @hint = ''
+      if @hint_value.to_s.empty?
+        @hint_value = ''
         hint_pos = Random.rand(SECRET_CODE_SIZE);
-        hint_pos.times {@hint += '*'}
-        @hint += @secret[hint_pos].to_s
-        (SECRET_CODE_SIZE - hint_pos - 1).times {@hint += '*'}
+        hint_pos.times {@hint_value += '*'}
+        @hint_value += @secret[hint_pos].to_s
+        (SECRET_CODE_SIZE - hint_pos - 1).times {@hint_value += '*'}
       end
-      @hint
+      @hint_value
     end
 
     def score
       hints_used = 0
-      hints_used = 1 unless @hint.empty?
+      hints_used = 1 unless @hint_value.empty?
       MAX_SCORE - hints_used*HINT - @round_number*ROUND_PENALTY
     end
 
