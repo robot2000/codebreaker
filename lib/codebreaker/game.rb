@@ -5,7 +5,7 @@ module Codebreaker
     MAX_SCORE = 10
     MAX_ROUNDS = 10
     ROUND_PENALTY = 10
-    HINT = 5
+    HINT = 4
 
     attr_reader :round_number, :guess, :game_status, :hint_value
 
@@ -18,12 +18,10 @@ module Codebreaker
     end
  
     def start
-      SECRET_CODE_SIZE.times do
-        @secret << (Random.rand(1..6)).to_s
-      end
+      secret_generate
     end
 
-    def check (suspect)
+    def check(suspect)
       
       raise ArgumentError, 'length must be equal 4' unless suspect.to_s.size == SECRET_CODE_SIZE
       raise ArgumentError, 'must contain only numbers from 1 to 6' unless suspect.to_s[/[1-6]+/].size == SECRET_CODE_SIZE
@@ -47,10 +45,11 @@ module Codebreaker
           minus += '-'
         end
       end
+
       result = plus + minus
       @guess[suspect.to_s] = result
       @round_number += 1
-      @game_status = 'win' if result == '++++'
+      @game_status = 'win' if result == '+' * SECRET_CODE_SIZE
       @game_status = 'loose' if @round_number >= MAX_ROUNDS
       result
     end
@@ -58,12 +57,20 @@ module Codebreaker
     def hint
       if @hint_value.to_s.empty?
         @hint_value = ''
-        hint_pos = Random.rand(SECRET_CODE_SIZE);
+        hint_pos = Random.rand(1..SECRET_CODE_SIZE);
         hint_pos.times {@hint_value += '*'}
         @hint_value += @secret[hint_pos].to_s
         (SECRET_CODE_SIZE - hint_pos - 1).times {@hint_value += '*'}
       end
       @hint_value
+    end
+
+    def win?
+      @game_status == 'win'
+    end
+
+    def lose?
+      @game_status == 'loose'
     end
 
     def score
@@ -72,8 +79,21 @@ module Codebreaker
       MAX_SCORE - hints_used*HINT - @round_number*ROUND_PENALTY
     end
 
-    def save_game(file)
-      # File.open(file, 'w') { |f| f. }
+    def save(name)
+      raise ArgumentError, 'player name should be a string' unless name.is_a?(String)
+      
+      f = File.open("../lib/history/#{name.downcase}", 'a')
+      datetime = DateTime.now.strftime('%F %R')
+      f.puts  "#{@game_status} \t#{@round_number} \t#{datetime}"
+      f.close
+    end
+
+    private
+
+    def secret_generate
+      SECRET_CODE_SIZE.times do
+        @secret << (Random.rand(1..6)).to_s
+      end
     end
   end
 end

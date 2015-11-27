@@ -60,43 +60,44 @@ module Codebreaker
 
       context 'with good argument' do
         @test = [
-            [3123, 5664, '', "return '' if all numbers wrong"],
-            [3123, 5614, '-', "return '-' if one of the numbers is right, but stays on wrong position"],
-            [3123, 5164, '+', "return '+' one of the number in right position"],
-            [3123, 3131, '++-', "return '++-' when one of the number in different position and 2 numbers in right position"],
-            [3123, 3123, '++++', "return '++++' user win the game"],
-            [1234, 1551, '+'],
-            [1234, 5634, '++'],
-            [1234, 5234, '+++'],
-            [1234, 3556, '-'],
-            [1234, 3456, '--'],
-            [1234, 3451, '---'],
-            [1234, 3421, '----'],
-            [1234, 1552, '+-'],
-            [1234, 1542, '+--'],
-            [1234, 1342, '+---'],
-            [1234, 1532, '++-'],
-            [1234, 1432, '++--'],
-            [1234, 1233, '+++'],
-            [1234, 1532, '++-'],
-            [1234, 1432, '++--'],
-            [1113, 3111, '++--'],
-            [1113, 1111, '+++'],
-          ]
+          [3123, 5664, '', "return '' if all numbers wrong"],
+          [3123, 5614, '-', "return '-' if one of the numbers is right, but stays on wrong position"],
+          [3123, 5164, '+', "return '+' one of the number in right position"],
+          [3123, 3131, '++-', "return '++-' when one of the number in different position and 2 numbers in right position"],
+          [3123, 3123, '++++', "return '++++' user win the game"],
+          [1234, 1551, '+'],
+          [1234, 5634, '++'],
+          [1234, 5234, '+++'],
+          [1234, 3556, '-'],
+          [1234, 3456, '--'],
+          [1234, 3451, '---'],
+          [1234, 3421, '----'],
+          [1234, 1552, '+-'],
+          [1234, 1542, '+--'],
+          [1234, 1342, '+---'],
+          [1234, 1532, '++-'],
+          [1234, 1432, '++--'],
+          [1234, 1233, '+++'],
+          [1234, 1532, '++-'],
+          [1234, 1432, '++--'],
+          [1113, 3111, '++--'],
+          [1113, 1111, '+++'],
+          [1234, 2524, '+-']
+        ]
 
-          @test.each do |elem|
-            text = elem[3] ? elem[3] : "when secret_number = #{elem[0]} and gues = #{elem[1]}  return '#{elem[2]}'"
-            it text do
-              game.instance_variable_set(:@secret, elem[0].to_s)
-              expect(game.check(elem[1])).to eq(elem[2])
-            end
+        @test.each do |elem|
+          text = elem[3] ? elem[3] : "when secret_number = #{elem[0]} and gues = #{elem[1]}  return '#{elem[2]}'"
+          it text do
+            game.instance_variable_set(:@secret, elem[0].to_s)
+            expect(game.check(elem[1])).to eq(elem[2])
           end
         end
-
-        it "increment round number" do
-          expect{game.check(1234)}.to change{game.round_number}.by(1)
-        end
       end
+
+      it "increment round number" do
+        expect{game.check(1234)}.to change{game.round_number}.by(1)
+      end
+    end
 
     context "#hint" do
 
@@ -128,6 +129,23 @@ module Codebreaker
       
       it "changes with new round" do
         expect{game.check(1234)}.to change{game.score}
+      end
+    end
+
+    context "#game_status" do
+
+      before do
+        game.start
+      end
+        
+      it "win?" do
+        game.instance_variable_set(:@game_status, 'win')
+        expect(game.win?).to eq(true)
+      end
+      
+      it "lose?" do
+        game.instance_variable_set(:@game_status, 'loose')
+        expect(game.lose?).to eq(true)
       end
     end
   end
