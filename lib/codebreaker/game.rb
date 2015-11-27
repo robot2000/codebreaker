@@ -57,7 +57,7 @@ module Codebreaker
     def hint
       if @hint_value.to_s.empty?
         @hint_value = ''
-        hint_pos = Random.rand(1..SECRET_CODE_SIZE);
+        hint_pos = Random.rand(SECRET_CODE_SIZE);
         hint_pos.times {@hint_value += '*'}
         @hint_value += @secret[hint_pos].to_s
         (SECRET_CODE_SIZE - hint_pos - 1).times {@hint_value += '*'}
@@ -82,9 +82,8 @@ module Codebreaker
     def save(name)
       raise ArgumentError, 'player name should be a string' unless name.is_a?(String)
       
-      f = File.open("../lib/history/#{name.downcase}", 'a')
-      datetime = DateTime.now.strftime('%F %R')
-      f.puts  "#{@game_status} \t#{@round_number} \t#{datetime}"
+      f = File.open("./lib/history/#{name.downcase}", 'a')
+      f.puts  "#{name} \t#{@game_status} \t#{@round_number} \t#{Time.now}"
       f.close
     end
 

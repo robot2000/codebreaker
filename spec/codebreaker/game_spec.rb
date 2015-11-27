@@ -101,6 +101,10 @@ module Codebreaker
 
     context "#hint" do
 
+      it '#hint method was called' do
+        expect(game).to respond_to(:hint)
+      end
+
       it "change hint when called first time" do
         expect{game.hint}.to change{game.hint_value}
       end
@@ -115,6 +119,11 @@ module Codebreaker
     end
 
     context "#score" do
+
+      it '#score method was called' do
+        expect(game).to respond_to(:score)
+      end
+      
       it "must be returned FixNum" do
         expect(game.score).to be_instance_of(Fixnum)
       end
@@ -132,20 +141,53 @@ module Codebreaker
       end
     end
 
-    context "#game_status" do
+    context "#game_status win" do
 
       before do
         game.start
+        game.instance_variable_set(:@secret, "1234")
+        game.check("1234")
       end
-        
+      
+      it '#win? method was called' do
+        expect(game).to respond_to(:win?)
+      end
+
       it "win?" do
         game.instance_variable_set(:@game_status, 'win')
         expect(game.win?).to eq(true)
       end
+    end
+
+    context "#game_status loose" do
+
+      before do
+        game.start
+        game.instance_variable_set(:@round_number, 10)
+        game.check("1234")
+      end
       
+      it '#lose? method was called' do
+        expect(game).to respond_to(:lose?)
+      end
+
       it "lose?" do
         game.instance_variable_set(:@game_status, 'loose')
         expect(game.lose?).to eq(true)
+      end
+    end
+
+    context "#save game" do
+      
+      it '#save method was called' do
+        expect(game).to respond_to(:save)
+      end
+
+      it 'generate user file' do
+        game.instance_variable_set(:@game_status, "win")
+        game.instance_variable_set(:@round_number, 6)
+        game.save('r2d2')
+        #expect(File.exist?("r2d2")).to eq true
       end
     end
   end
