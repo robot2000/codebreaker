@@ -2,10 +2,11 @@ module Codebreaker
   class Game
     
     SECRET_CODE_SIZE = 4
-    MAX_SCORE = 10
+    MAX_SCORE = 200
     MAX_ROUNDS = 10
     ROUND_PENALTY = 10
-    HINT = 4
+    HINT_PENALTY = 50
+    HINT = 1
 
     attr_reader :round_number, :guess, :game_status, :hint_value
 
@@ -50,7 +51,7 @@ module Codebreaker
       @guess[suspect.to_s] = result
       @round_number += 1
       @game_status = 'win' if result == '+' * SECRET_CODE_SIZE
-      @game_status = 'loose' if @round_number >= MAX_ROUNDS
+      @game_status = 'loose' if @round_number > MAX_ROUNDS
       result
     end
 
@@ -76,7 +77,7 @@ module Codebreaker
     def score
       hints_used = 0
       hints_used = 1 unless @hint_value.empty?
-      MAX_SCORE - hints_used*HINT - @round_number*ROUND_PENALTY
+      MAX_SCORE - hints_used * HINT_PENALTY - @round_number * ROUND_PENALTY
     end
 
     def save(name)
