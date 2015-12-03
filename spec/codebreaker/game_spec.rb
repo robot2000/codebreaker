@@ -132,7 +132,7 @@ module Codebreaker
         round_number = 5
         game.instance_variable_set(:@round_number, round_number)
         game.instance_variable_set(:@hint_value, '**3*')
-        val = Game::MAX_SCORE - Game::HINT - round_number*Game::ROUND_PENALTY
+        val = Game::MAX_SCORE - Game::HINT_PENALTY - round_number*Game::ROUND_PENALTY
         expect(game.score).to eq(val)
       end
       
